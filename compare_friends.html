@@ -1,0 +1,149 @@
+<!--
+        compare_friends.html
+        
+        Started by: Mirat Can Bayrak <mirat@mirat-Lenovo-G550>
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>Mikemmel İcad</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name="generator" content="Geany 0.20" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script id="subscriptionTemplate" type="text/x-jquery-tmpl">
+        <li><a href="http://friendfeed.com/${id}"><img src="http://friendfeed-api.com/v2/picture/${id}?size=medium" width=50 height=50 alt="${name}" /></a></li>
+    </script>
+
+    <script type="text/javascript">
+        function notify(msg){$("p#notification").html(msg);}
+
+        function getJointFeeds(first_feed_id, second_feed_id) {
+            var Joints = [];
+            $.ajax({  
+                url: 'http://friendfeed.com/api/v2/feedinfo/'+ first_feed_id +'?callback=?',  
+                dataType: 'json',  
+                before: notify(first_feed_id + ' hakkına veri toplanıyor...'),
+                success: function(first_feed_info){
+                    $.ajax({
+                        url: 'http://friendfeed.com/api/v2/feedinfo/'+ second_feed_id +'?callback=?',  
+                        dataType: 'json',
+                        before: notify(second_feed_id + ' hakkına veri toplanıyor...'),
+                        success: function(second_feed_info){
+                            notify('Muazzam teknoloji çalıştırılıyor...')
+                            $.each(first_feed_info.subscriptions, function (index, first_subscription) {
+                                $.each(second_feed_info.subscriptions, function(index, second_subscription) {
+                                    if (first_subscription.id == second_subscription.id) {
+                                        Joints.push(first_subscription);
+                                    }
+                                })
+                            })
+                            notify('Dev teknoloji yine başardı...')
+                            $('#subscriptionTemplate').tmpl(Joints).appendTo("ul#joints");
+                            console.log(Joints);
+                        }
+                    });
+                }
+            });  
+        };
+
+        function findJoints() {
+            $("form#feeds > input").attr("disabled", "disabled");
+            first_feed_id = $("form#feeds > input[name='first_feed']").val()
+            second_feed_id = $("form#feeds > input[name='second_feed']").val()
+            if (first_feed_id && second_feed_id) {
+                getJointFeeds(first_feed_id, second_feed_id);
+            } else {
+                alert("kutucuklara karşılaştırmak istediğiniz feed'lerin id lerini yazın");
+            }
+            $("form#feeds > input").removeAttr("disabled");
+            return false;
+        }
+    </script>
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-10242998-2']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <style>
+        body{
+            background:#aaa
+        }
+
+        h1 {
+            font-size:16px;
+            text-align:center;
+        }
+        div#wrapper {
+            width:300px;
+            border:1px solid #333;
+            background:#fff;
+            margin:30px auto;
+            padding:20px 0;
+            overflow:auto;
+        }
+
+        ul#joints {
+            height:auto;
+            overflow:auto;
+            margin:0;
+            padding:0;
+        }
+
+        ul#joints li {
+            float:left;
+            list-style-type:none;
+            margin:5px;
+            padding:0;
+        }
+        
+        ul#joints li img {
+            padding:0;
+            margin:0;
+            background:black;
+        }
+        p#notification {
+            background:yellow;
+            padding:5px;
+            font-size:13px;
+            text-align:center;
+        }
+        form {
+            margin:0;
+            padding:0 2px;
+            text-align:center;
+        }
+        input[type='text'] {
+            display:block;
+            width:260px;
+            background:white;
+            margin:5px auto;
+        }
+        input[type='submit'] {
+            width:265px;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <div id="wrapper">
+        <h1>Ortak Arkadaş Bulucu</h1>
+        <form id="feeds" onSubmit="return findJoints();">
+            <input type="text" name="first_feed" />
+            <input type="text" name="second_feed" />
+            <input type="submit" value="ortak arkadaşları bul" />
+        </form>
+        <p id="notification">Dev teknoloji hazır.</p>
+        <ul id="joints"></ul>
+    </div>
+</body>
+</html>
