@@ -18,7 +18,7 @@ def get_subscribers(feed_id):
         print feed_id, "is not exists, skipping."
 
     if feed_info:
-        subscribers = set([subscription["id"] for subscription in feed_info['subscribers']))
+        subscribers = set([subscription["id"] for subscription in feed_info['subscribers']])
     else:
         subscribers = set()
     return subscribers
