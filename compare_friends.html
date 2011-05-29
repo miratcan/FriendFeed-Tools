@@ -1,37 +1,40 @@
+
 <!--
         compare_friends.html
         
         Started by: Mirat Can Bayrak <mirat@mirat-Lenovo-G550>
--->
-
+--> 
+ 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
-<head>
-	<title>Mikemmel İcad</title>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<meta name="generator" content="Geany 0.20" />
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
-    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
-    <script id="subscriptionTemplate" type="text/x-jquery-tmpl">
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+ 
+<head> 
+	<title>Mikemmel İcad</title> 
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" /> 
+	<meta name="generator" content="Geany 0.20" /> 
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script> 
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script> 
+    <script id="subscriptionTemplate" type="text/x-jquery-tmpl"> 
         <li><a href="http://friendfeed.com/${id}"><img src="http://friendfeed-api.com/v2/picture/${id}?size=medium" width=50 height=50 alt="${name}" /></a></li>
-    </script>
-
-    <script type="text/javascript">
+    </script> 
+ 
+    <script type="text/javascript"> 
         function notify(msg){$("p#notification").html(msg);}
-
+ 
         function getJointFeeds(first_feed_id, second_feed_id) {
             var Joints = [];
             $.ajax({  
-                url: 'http://friendfeed.com/api/v2/feedinfo/'+ first_feed_id +'?callback=?',  
-                dataType: 'json',  
+                url: 'http://friendfeed.com/api/v2/feedinfo/'+ first_feed_id + '?callback=?',  
+                dataType: 'json',
                 before: notify(first_feed_id + ' hakkına veri toplanıyor...'),
+				error: function() {notify('Böyle bi adam yok');},
                 success: function(first_feed_info){
                     $.ajax({
-                        url: 'http://friendfeed.com/api/v2/feedinfo/'+ second_feed_id +'?callback=?',  
+                        url: 'http://friendfeed.com/api/v2/feedinfo/'+ second_feed_id + '?callback=?',  
                         dataType: 'json',
-                        before: notify(second_feed_id + ' hakkına veri toplanıyor...'),
+                        before: notify(second_feed_id + ' hakkında veri toplanıyor...'),
+						error: function() {notify('Böyle bi adam yok');},
                         success: function(second_feed_info){
                             notify('Muazzam teknoloji çalıştırılıyor...')
                             $.each(first_feed_info.subscriptions, function (index, first_subscription) {
@@ -41,16 +44,16 @@
                                     }
                                 })
                             })
-                            notify('Dev teknoloji yine başardı...')
+                            notify(Joints.length + ' ortak arkadaş tespit edildi.')
                             $('#subscriptionTemplate').tmpl(Joints).appendTo("ul#joints");
-                            console.log(Joints);
                         }
                     });
                 }
             });  
         };
-
+ 
         function findJoints() {
+	$("ul#joints").empty();
             $("form#feeds > input").attr("disabled", "disabled");
             first_feed_id = $("form#feeds > input[name='first_feed']").val()
             second_feed_id = $("form#feeds > input[name='second_feed']").val()
@@ -62,8 +65,8 @@
             $("form#feeds > input").removeAttr("disabled");
             return false;
         }
-    </script>
-    <script type="text/javascript">
+    </script> 
+    <script type="text/javascript"> 
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-10242998-2']);
         _gaq.push(['_trackPageview']);
@@ -72,12 +75,12 @@
             ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
         })();
-    </script>
-    <style>
+    </script> 
+    <style> 
         body{
             background:#aaa
         }
-
+ 
         h1 {
             font-size:16px;
             text-align:center;
@@ -90,14 +93,14 @@
             padding:20px 0;
             overflow:auto;
         }
-
+ 
         ul#joints {
             height:auto;
             overflow:auto;
             margin:0;
             padding:0;
         }
-
+ 
         ul#joints li {
             float:left;
             list-style-type:none;
@@ -130,20 +133,20 @@
         input[type='submit'] {
             width:265px;
         }
-    </style>
+    </style> 
     
-</head>
-
-<body>
-    <div id="wrapper">
-        <h1>Ortak Arkadaş Bulucu</h1>
-        <form id="feeds" onSubmit="return findJoints();">
-            <input type="text" name="first_feed" />
-            <input type="text" name="second_feed" />
-            <input type="submit" value="ortak arkadaşları bul" />
-        </form>
-        <p id="notification">Dev teknoloji hazır.</p>
-        <ul id="joints"></ul>
-    </div>
-</body>
-</html>
+</head> 
+ 
+<body> 
+    <div id="wrapper"> 
+        <h1>Ortak Arkadaş Bulucu</h1> 
+        <form id="feeds" onSubmit="return findJoints();"> 
+            <input type="text" name="first_feed" /> 
+            <input type="text" name="second_feed" /> 
+            <input type="submit" value="ortak arkadaşları bul" /> 
+        </form> 
+        <p id="notification">Dev teknoloji hazır.</p> 
+        <ul id="joints"></ul> 
+    </div> 
+</body> 
+</html> 
