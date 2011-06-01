@@ -46,17 +46,22 @@ class Localizer(object):
         print "Starting localization"
 
         current = 0
+
         for entry in self.feed_data['entries']:
             if entry.has_key("thumbnails"):
                 self._localize_thumbnails(entry)
                 self._localize_images(entry)
-                print current, "entries localized."
-                current += 1
+            if entry.has_key("files"):
+                self._localize_attachments(entry)
+
+            print current, "entries localized."
+            current += 1
 
         print "Starting downloads..."
 
         current = 0
         dl_length = len(self.downloads)
+
         for dl in self.downloads:
             print "Downloading %d of %d" % (current, dl_length)
             download(dl[0], dl[1])
@@ -125,7 +130,7 @@ if __name__ == "__main__":
     import sys
 
     sys.path.append("..")
-    feed_id = "joanmiro"
+    feed_id = "aakasyaa"
     localizer = Localizer(feed_id, FeedSource(feed_id))
     localizer.run()
 

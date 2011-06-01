@@ -2,10 +2,92 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>{%block title%}</title>
+        <title>Backup of {{name}}</title>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-    </head>
+	<style>
+	  body {
+	  font-family: Arial,sans-serif;
+	  font-size: 15px;
+	  }
+
+	  div.feed {
+	  width : 800px;
+	  border: 1px solid grey;
+	  margin:0 auto;
+	  padding:5px;
+	  }
+
+	  div.entry{
+	  margin:40px 0;
+	  }
+
+	  div.media {
+	  }
+
+	  div.info {
+	  font-size:0.7em;
+	  }
+	  
+	  div.likes {
+	  background: top left no-repeat  url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAnVJREFUeNqkk89LFGEYx7/vzLrq7raullAEykYUGVJR7HqRjSiSpIMeuniyWx0XvGT9BUL3TkURHQJFSDCKDTskGCFhYf5qXVfQcG3NVtfZd955+85oWyR2qIHheWbm/X7e7/M+zwitNf7nEn8C7FcixFdJ7aDNcRBzPzMfYz7MeHffVV3YE0Bxgovui4aeqIjEoP11VCvoYg4qPw5rpi9NUHdthx7ZBbBTokNHEv3GwS7oQA3U5ic41iq0vcVVVTCqjkJIA9bCU1hfRjrrr+mBMkCmRB1Dxmx+EnKMdaitNCC/w7EtGtjahjgaorIBZmUzvo1eL9BJ46Eu/dVwKbSdNBp7Q9rPdRbF9gZSgzk+lABVwusXTGUB9voElDWHwInekKOQdLUegLR2URuHw521XSRQ4vyVai9qJdGaKDCnGxey9g6+yDEQ0P47oAmVYVpeK4u8aJeYl3Zy6eWORWewoBSiZQBLKHp1KhsvB95gfnpxW6jkTrSQmVtF6vmiBwMPjJuavxwopCGLzPxoSRzHzMcssnPLntAVLKTzmJ3KIxYPQxgBrvdBWph1tb6dEoZkbvy0EWlAILiEltYoJt7OY/J9lq4kgtUCsVgNggETvvApFHMZyBKGym3M94t6Qj6H4o9CjpyCKkyyATwPttGxf7YRMIOchfBlZJ7dKPBIjpy5pVe8Emo79Yo7YZuzD1nfYZjhOIRZR/va67/hP4CK+oscsAtY/TDo7t7tineN8tJjcYnncS/Y1BP17z8Jo4J8x4ZtKWwsTWN5tC/NnW+eva2H9/yZsg+EOyQ9dNTGVsXYSVA0xnuYd9+5O3/5mf7l+iHAAP3UjrcWL0PwAAAAAElFTkSuQmCC);
+	  padding: 0 0 0 20px;
+	  margin:5px 0;
+	  }
+
+	  div.comment {
+	  margin:10px 0 0 0;
+	  font-size: 13px;
+	  line-height: 16px;
+	  color: #666;
+	  }
+
+	  div.comment > div.body {
+	  margin:0 0 0 20px;
+	  }
+
+	  span.from, span.liker {
+	  text-decoration:underline;
+	  }
+
+ 	  div.quote {
+	  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAXRJREFUeNpi/P//PwMlgImBQsACY0R27BQCUpOBOASI2fDo2Q3EWcsr3O+AeSAvgHBE+46NKw/e+v/7z9//+MCWk/f/A9XeBmI2kD4WqO08QMo7xFaF4fMPBoaff/4z/AUGzb9/DGD6L4j+95+BEaTITIHh+PUXKneffzQAck/BvCAkwsfBzMTIyPDj93+Gf/+RNIIN+s/w5x/EQBDg4wL7UBQlDGAApvEfks0IV+COhXdvPv0AqgX6iQmi8A/YVojNMAwMMbDiLz9+g/XADQCG6BcgtXXN4TsMIsDQUBBmZFAWYWJQE2Ni4GFnZPj7l4FBko+RQU+amWHrqQcMt59+AMXABZBeRlhCQorGcCBmBom5GsoyJLlrgeU/fPnJsO7oXYbd5x9fAXIDMaIRGwZG1Z3n777+n7vjKijqvgNxLboaRlxJGeiiXkd9maL9F598BXJrgTb2Y1OH1QCgZiUgtQeI24Aa5+BLyowDnpkoNgAgwACtnv0bwuZFOAAAAABJRU5ErkJggg==);
+	  display: inline;
+	  height: 16px;
+	  width: 16px;
+	  margin: 2px 0 0 0;
+	  float:left;
+	  }
+
+	</style>
+    </head> 
     <body>
-        {%block content%}{%endblock content%}
+      <div class="feed">
+	{% for entry in entries %}
+	<div class="entry">
+	  <div class="body">{{entry.body}}</div>
+	  <div class="media">
+            {% for thumbnail in entry.thumbnails %}
+            <a href="{{thumbnail.link}}">
+              <img src="{{thumbnail.url}}" />
+            </a>
+            {% endfor %}
+	  </div>
+	  <div class="info">{{entry.date}}</div>
+	  <div class="likes">
+	    {% for like in entry.likes %}
+	    <span class="liker">{{like.from.name}}</span>
+	    {% endfor %}
+	  </div>
+	  <div class="comments">
+	    {% for comment in entry.comments %}
+	    <div class="comment">
+	      <div class="quote" title="{{comment.date}}"></div>
+	      <div class="body">{{comment.body}} - <span class="from">{{comment.from.name}}</span></div>
+
+	    </div>
+	    {% endfor %}
+	  </div>
+	</div>
+	{% endfor %}
     </body>
 </html>
