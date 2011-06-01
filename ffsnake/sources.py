@@ -1,40 +1,47 @@
-from api.friendfeed import FriendFeed
-from api.friendfeed import urllib2
+from urllib import urlopen, urlencode
+from simplejson import loads, dumps
+_loads = lambda string: loads(string.decode("utf-8"))
 
-ff_api = FriendFeed()
-
-class EntrySource(object):
+class FeedSource(object):
     """
-    Entry source generator...
+    File like object for feeds.
 
     >>> entry_source = EntrySource("breth")
+    >>> entry_source.read() # returns feed with all of its entries
     """
-    def __init__(self, feed_id, num=100, stop=0):
+
+    FEED_DATA_PATTERN = "http://friendfeed-api.com/v2/feed/%s?%s"
+    FETCH_SIZE = 100
+
+    def __init__(self, feed_id, fetch_size=100, stop_at=0):
         self.feed_id = feed_id
-        self.num = num
-        self.chunk = []
-        self.start = 0
-        self.stop = 0
+        self.cursor_at = 0
+        self.stop_at = stop_at
+        print "Feed collector initialized for %s" % self.feed_id
 
-    def __iter__(self):
-        pass
-        #return self
+    def read(self):
+        chunk = self._take_a_bite()
+        feed_buffer = chunk
+        while chunk['entries']:
+            print "%s entries collected." % self.cursor_at
+            feed_buffer['entries'].extend(chunk['entries'])
+            if self.stop_at != 0 and self.cursor_at > self.stop_at:
+                break
+            chunk = self._take_a_bite()
+        return dumps(feed_buffer)
 
-    def next(self):
-        if self.chunk:
-            return self.chunk.pop()
+    def _take_a_bite(self):
+        params = urlencode({"start": self.cursor_at, "num" : self.FETCH_SIZE})
+        feed_url = self.FEED_DATA_PATTERN % (self.feed_id, params)
+        data = _loads(urlopen(feed_url).read())
+        if data.has_key("errorCode"):
+            raise ValueError(data['errorCode'])
         else:
-            entries = ff_api.fetch_feed(self.feed_id,
-                start=self.start, num=self.num)['entries']
+            self.cursor_at += self.FETCH_SIZE
+        return data
 
-            if not entries:
-                print "No data came..."
-                raise StopIteration
-            elif self.stop > 0 and self.start > self.stop:
-                raise StopIteration
-            else:
-                self.chunk = entries
-                self.start += self.num
-                return self.chunk.pop()
-
-
+if __name__ == "__main__":
+    collector = FeedCollector("joanmiro", stop_at=200)
+    d = collector.read()
+    for e in d['entries']:
+        print e['body']
