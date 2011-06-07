@@ -37,7 +37,7 @@ class FriendFeedSource(object):
             feed_buffer['entries'].extend(chunk['entries'])
             print "Waiting for %d seconds..." % self.WAIT_BETWEEN_BITES
             wait(self.WAIT_BETWEEN_BITES)
-            print "Fetchinh data..."
+            print "Fetching data..."
             chunk = self._take_a_bite()
             print "%s entries collected." % self.cursor_at
         return dumps(feed_buffer)
