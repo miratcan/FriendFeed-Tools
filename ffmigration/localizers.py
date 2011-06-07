@@ -6,23 +6,25 @@ from os import mkdir
 
 from utils import download
 from utils import slugify
-from sources import FeedSource
+
 from simplejson import loads
 
 _loads = lambda string: loads(string.decode("utf-8"))
 
-try:
-    from jinja2 import Environment, PackageLoader
-except:
-    raise ImportError("You need to install Jinja2 template system to run this application.")
+class FriendFeedLocalizer(object):
+    """ A process that converts sources remote file paths to local file paths.
+    """
 
-class Localizer(object):
-    """ A process that converts sources remote file paths to local file paths """
-    def __init__(self, feed_id, source, backup_path=None):
+    def __init__(self,
+                 feed_id,
+                 source,
+                 backup_path=None,
+                 localize_thumbnails=True,
+                 localize_images=True,
+                 localize_attachments = True):
+
         self.feed_id = feed_id
-
         self.feed_data = _loads(source.read())
-
         self.downloads = []
 
         self.backup_path = backup_path or self._backup_path()
@@ -43,10 +45,10 @@ class Localizer(object):
             mkdir(self.attachments_path)
 
     def run(self):
+
         print "Starting localization"
 
         current = 0
-
         for entry in self.feed_data['entries']:
             if entry.has_key("thumbnails"):
                 self._localize_thumbnails(entry)
@@ -61,11 +63,11 @@ class Localizer(object):
 
         current = 0
         dl_length = len(self.downloads)
-
         for dl in self.downloads:
             print "Downloading %d of %d" % (current, dl_length)
             download(dl[0], dl[1])
             current += 1
+        return self.feed_data
 
     def _backup_path(self):
         """Returns folder that will we backup
@@ -130,12 +132,10 @@ if __name__ == "__main__":
     import sys
 
     sys.path.append("..")
-    feed_id = "aakasyaa"
+
+    feed_id = "5posta"
     localizer = Localizer(feed_id, FeedSource(feed_id))
     localizer.run()
 
     env = Environment(loader=PackageLoader('ffsnake', 'templates'))
     template = env.get_template('base.html')
-    render = template.render(localizer.feed_data).encode("UTF-8")
-    output = file("output.html", "w")
-    output.write(render)
