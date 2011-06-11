@@ -3,7 +3,7 @@ Nedir?
 
 ffmigration, friendfeed kullanıcıları için oluşturulmuş bir taşınma
 aracıdır. Verilen userid ye ait bütün entry'leri toplar. Ardından bu
-entry'lerde geçen bütün eklentileri indirir ve bunları görüntülemek 
+entry'lerde geçen istenilen eklentileri indirir ve bunları görüntülemek 
 üzere bir html dosyası oluşturulur.
 
 Nasıl Kullanılır?
@@ -12,14 +12,34 @@ Betiğin ana çalıştırma dosyası migrate.py dosyasıdır. migrate.py
 dosyasına --help parametresi verilerek seçenekler incelenebilir.
 
 ::
-  python migrate.py --help
-  Usage: migrate.py [options] feedid
 
-  Options:
-    --version             show program's version number and exit
-    -h, --help            show this help message and exit
-    -t, --thumbnails      Localize and backup thumbnails of feed
-    -i, --images          Localize and backup shared images of feed
-    -a, --attachments     Localize and backup shared attachment of feed
-    -l FETCH_LIMIT, --limit=FETCH_LIMIT
-                        Limit number of entries that will be collected
+    ~$ python migrate.py --help
+    Usage: migrate.py [options] feedid
+
+    Options:
+        --version             show program's version number and exit
+        -h, --help            show this help message and exit
+        -t, --thumbnails      Localize and backup thumbnails of feed
+        -i, --images          Localize and backup shared images of feed
+        -a, --attachments     Localize and backup shared attachment of feed
+        -l FETCH_LIMIT, --limit=FETCH_LIMIT
+                                Limit number of entries that will be collected
+
+Örnek Kullanım.
+---------------
+bret id'li kullanıcının feed'ini yedeklemek istediğimizi farz edelim. 
+Feed'indeki thumbnail'leri, imajları ve eklentileri de indirmek
+istiyoruz.
+
+::
+
+    ~ $ python migrate.py bret --thumbnails --images --attachments 
+    Feed collector initialized for bret
+    Ready for fetching all entries
+    Waiting for 5 seconds...
+    Fetching data...
+    ...
+    ...
+    
+İşlem sonunda bret adlı bir klasör oluşacak içerisinde ilgili indirme
+işlemleri yapılacak ve bir bret.html adında dosya oluşacaktır.
