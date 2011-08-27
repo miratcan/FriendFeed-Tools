@@ -54,16 +54,17 @@ def main():
     source = FriendFeedSource(feed_id, fetch_limit=options.fetch_limit)
     localizer = FriendFeedLocalizer(
         feed_id,
-        source,
-        localize_thumbnails = options.localize_thumbnails,
-        localize_images = options.localize_images,
-        localize_attachments = options.localize_attachments)
+        options = {
+            "localize_thumbnails": options.localize_thumbnails,
+            "localize_images": options.localize_images,
+            "localize_attachments": options.localize_attachments
+        })
     localized_data = localizer.run()
-    localized_data_file = file(join(localizer.backup_path, feed_id + ".lfd"), "w")
+    localized_data_file = file(join(localizer.options['backup_path'], feed_id + ".lfd"), "w")
     dump(localized_data, localized_data_file)
     localized_data_file.close()
     migrater = FriendFeedHtmlMigration()
     migrater.run(localized_data)
-    
+
 if __name__ == '__main__':
     main()

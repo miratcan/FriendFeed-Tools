@@ -4,45 +4,40 @@ from urllib2 import urlparse
 from os.path import exists, join, dirname
 from os import mkdir
 
-from utils import download
-from utils import slugify
-
 from simplejson import loads
 
 _loads = lambda string: loads(string.decode("utf-8"))
+
+from utils import download
+from utils import slugify
+from sources import FriendFeedSource
 
 class FriendFeedLocalizer(object):
     """ A process that converts sources remote file paths to local file paths.
     """
 
-    def __init__(self,
-                 feed_id,
-                 source,
-                 backup_path=None,
-                 localize_thumbnails=True,
-                 localize_images=True,
-                 localize_attachments = True):
+    def __init__(self, feed_id, options={}):
 
         self.feed_id = feed_id
-        self.feed_data = _loads(source.read())
+        self.feed_data = _loads(FriendFeedSource(feed_id).read())
+        self.options = options
+
+        if not options.has_key("backup_path"):
+            options["backup_path"] = self._backup_path()
+
+        if not exists(self.options['backup_path']):
+            mkdir(self.options['backup_path'])
+
+        if not exists(self._thumbnails_path()):
+            mkdir(self._thumbnails_path())
+
+        if not exists(self._images_path()):
+            mkdir(self._images_path())
+
+        if not exists(self._attachments_path()):
+            mkdir(self._attachments_path())
+
         self.downloads = []
-
-        self.backup_path = backup_path or self._backup_path()
-        self.thumbnails_path = self._thumbnails_path()
-        self.images_path = self._images_path()
-        self.attachments_path = self._attachments_path()
-
-        if not exists(self.backup_path):
-            mkdir(self.backup_path)
-
-        if not exists(self.thumbnails_path):
-            mkdir(self.thumbnails_path)
-
-        if not exists(self.images_path):
-            mkdir(self.images_path)
-
-        if not exists(self.attachments_path):
-            mkdir(self.attachments_path)
 
     def run(self):
 
@@ -77,17 +72,17 @@ class FriendFeedLocalizer(object):
     def _thumbnails_path(self):
         """Returns folder that where we will save thumbnails
         """
-        return join(self.backup_path, "thumbnails")
+        return join(self.options['backup_path'], "thumbnails")
 
     def _images_path(self):
         """Returns folder that where we will save thumbnails
         """
-        return join(self.backup_path, "images")
+        return join(self.options['backup_path'], "images")
 
     def _attachments_path(self):
         """Returns folder that where we will save attachments
         """
-        return join(self.backup_path, "attachments")
+        return join(self.options['backup_path'], "attachments")
 
     def _queue_download(self, remote_path, local_path):
         self.downloads.append((remote_path, local_path))
@@ -100,7 +95,7 @@ class FriendFeedLocalizer(object):
             thumbnail['url']  = self._filename_for_thumbnail(thumbnail)
 
     def _localize_images(self, entry):
-        for thumbnail in entry['thumbnails']:                
+        for thumbnail in entry['thumbnails']:          
             if thumbnail['link'].startswith("http://m.friendfeed-media.com/"):
                 self._queue_download(thumbnail['link'], self._filename_for_image(thumbnail))
                 thumbnail['link'] = self._filename_for_image(thumbnail)
@@ -115,17 +110,17 @@ class FriendFeedLocalizer(object):
     def _filename_for_thumbnail(self, thumbnail):
         """Generates local filename for thumbnail
         """
-        return join(self.thumbnails_path, slugify(urlparse.urlparse(thumbnail['url']).path[1:]))
+        return join(self._thumbnails_path(), slugify(urlparse.urlparse(thumbnail['url']).path[1:]))
 
     def _filename_for_image(self, thumbnail):
         """Generates local filename for thumbnail image
         """
-        return join(self.images_path, urlparse.urlparse(thumbnail['link']).path[1:])
+        return join(self._images_path(), urlparse.urlparse(thumbnail['link']).path[1:])
 
     def _filename_for_attachment(self, attachment):
         """Generates local filename for attachment
         """
-        return join(self.attachments_path, slugify(attachment['name']))
+        return join(self._attachments_path(), slugify(attachment['name']))
 
 if __name__ == "__main__":
 
