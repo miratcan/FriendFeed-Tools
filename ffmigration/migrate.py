@@ -5,6 +5,8 @@ from localizers import FriendFeedLocalizer
 from optparse import OptionParser
 from os.path import join
 from urllib2 import HTTPError
+import logging
+logging.basicConfig(format='%(levelname)s:%(message)s',level=logging.INFO)
 
 # QUESTION: I am not sure that i have to describe dependencies at runtime.
 try:
@@ -69,7 +71,7 @@ def main():
         migrater = FriendFeedHtmlMigration()
         migrater.run(localized_data)
     except HTTPError:
-        print "Geçersiz ID"
+        logging.error("Geçersiz ID")
     
 
 if __name__ == '__main__':

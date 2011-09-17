@@ -12,6 +12,9 @@ from utils import download
 from utils import slugify
 from sources import FriendFeedSource
 
+import logging
+logging.basicConfig(format='%(levelname)s:%(message)s',level=logging.INFO)
+
 class FriendFeedLocalizer(object):
     """ A process that converts sources remote file paths to local file paths.
     """
@@ -41,7 +44,7 @@ class FriendFeedLocalizer(object):
 
     def run(self):
 
-        print "Starting localization"
+        logging.info("Starting localization")
 
         current = 0
         for entry in self.feed_data['entries']:
@@ -51,15 +54,15 @@ class FriendFeedLocalizer(object):
             if entry.has_key("files"):
                 self._localize_attachments(entry)
 
-            print current, "entries localized."
+            logging.info("%s entries localized." % str(current))
             current += 1
 
-        print "Starting downloads..."
+        logging.info("Starting downloads...")
 
         current = 0
         dl_length = len(self.downloads)
         for dl in self.downloads:
-            print "Downloading %d of %d" % (current, dl_length)
+            logging.info("Downloading %d of %d" % (current, dl_length))
             download(dl[0], dl[1])
             current += 1
         return self.feed_data

@@ -4,6 +4,8 @@ from simplejson import loads, dumps
 from time import sleep as wait
 
 _loads = lambda string: loads(string.decode("utf-8"))
+import logging
+logging.basicConfig(format='%(levelname)s:%(message)s',level=logging.INFO)
 
 class FriendFeedSource(object):
     """
@@ -28,8 +30,8 @@ class FriendFeedSource(object):
             self.feed_id = feed_id
             self.cursor_at = 0
             self.fetch_limit = fetch_limit
-            print "Feed collector initialized for %s" % self.feed_id
-            print "Ready for fetching %s entries" % (self.fetch_limit or "all")
+            logging.info("Feed collector initialized for %s" % self.feed_id)
+            logging.info("Ready for fetching %s entries" % (self.fetch_limit or "all"))
         except HTTPError,e:
             raise e 
         
@@ -41,11 +43,11 @@ class FriendFeedSource(object):
             if self.fetch_limit != 0 and self.cursor_at >= self.fetch_limit:
                 break
             feed_buffer['entries'].extend(chunk['entries'])
-            print "Waiting for %d seconds..." % self.WAIT_BETWEEN_BITES
+            logging.info("Waiting for %d seconds..." % self.WAIT_BETWEEN_BITES)
             wait(self.WAIT_BETWEEN_BITES)
-            print "Fetching data..."
+            logging.info("Fetching data...")
             chunk = self._take_a_bite()
-            print "%s entries collected." % self.cursor_at
+            logging.info("%s entries collected." % self.cursor_at)
         return dumps(feed_buffer)
 
     def _take_a_bite(self):
