@@ -1,4 +1,4 @@
-from urllib2 import urlopen
+from urllib2 import urlopen,HTTPError
 from urllib import urlencode
 from simplejson import loads, dumps
 from time import sleep as wait
@@ -22,11 +22,17 @@ class FriendFeedSource(object):
     WAIT_BETWEEN_BITES = 5 # seconds
 
     def __init__(self, feed_id, fetch_size=100, fetch_limit=0):
-        self.feed_id = feed_id
-        self.cursor_at = 0
-        self.fetch_limit = fetch_limit
-        print "Feed collector initialized for %s" % self.feed_id
-        print "Ready for fetching %s entries" % (self.fetch_limit or "all")
+        test_feed_id = "http://friendfeed-api.com/v2/feed/%s" % feed_id
+        try:
+            test_404 = urlopen(test_feed_id)
+            self.feed_id = feed_id
+            self.cursor_at = 0
+            self.fetch_limit = fetch_limit
+            print "Feed collector initialized for %s" % self.feed_id
+            print "Ready for fetching %s entries" % (self.fetch_limit or "all")
+        except HTTPError,e:
+            raise e 
+        
 
     def read(self):
         chunk = self._take_a_bite()
